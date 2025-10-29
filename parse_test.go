@@ -1880,3 +1880,16 @@ func TestNoPositionalMapAfterPositionalMap(t *testing.T) {
 	_, err := NewParser(Config{}, &args)
 	assert.Error(t, err)
 }
+
+func TestIgnoreUnknownTag(t *testing.T) {
+	var args struct {
+		Known string `arg:"--known"`
+	}
+	p, err := NewParser(Config{
+		IgnoreUnknown: true,
+	}, &args)
+	require.NoError(t, err)
+	err = p.Parse([]string{"--known=2", "--unknown=1"})
+	assert.NoError(t, err)
+	assert.Equal(t, "2", args.Known)
+}

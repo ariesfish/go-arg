@@ -129,7 +129,11 @@ type Config struct {
 	// default values, including pointers to sub commands
 	IgnoreDefault bool
 
-	// StrictSubcommands intructs the library not to allow global commands after
+	// IgnoreUnknown instructs the library to ignore unknown arguments
+	// rather than returning an error
+	IgnoreUnknown bool
+
+	// StrictSubcommands instructs the library not to allow global commands after
 	// subcommand
 	StrictSubcommands bool
 
@@ -706,6 +710,9 @@ func (p *Parser) process(args []string) error {
 		// we expand subcommands so it is better not to use a map)
 		spec := findOption(specs, opt)
 		if spec == nil || opt == "" {
+			if p.config.IgnoreUnknown {
+				continue
+			}
 			return fmt.Errorf("unknown argument %s", arg)
 		}
 		wasPresent[spec] = true
